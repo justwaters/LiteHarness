@@ -185,6 +185,7 @@ func handleCommand(line string, cfg *Config, provider Provider, messages *[]Mess
 			if err != nil {
 				return nil, err
 			}
+			fmt.Printf("Provider set to: %s\n", c(ColorCyan, cfg.Provider))
 			return p, nil
 		} else {
 			fmt.Printf("Current provider: %s\n", c(ColorCyan, cfg.Provider))
