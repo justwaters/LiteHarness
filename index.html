@@ -328,6 +328,43 @@
 
   .config span.comment { color: var(--muted); }
 
+  .one-liner {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-left: 3px solid var(--accent);
+    overflow-x: auto;
+  }
+
+  .one-liner p {
+    margin: 0 0 0.75rem 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: none;
+  }
+
+  .one-liner pre {
+    background: #0d0d0d;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--code);
+    overflow-x: auto;
+    margin: 0.75rem 0 0 0;
+  }
+
+  .one-liner pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--code);
+  }
+
+  .small { font-size: 0.85rem; color: var(--muted); }
+
   /* Install steps — numbered because it IS a sequence */
   .install-list { list-style: none; }
 
@@ -596,6 +633,13 @@
     <section id="install">
       <div class="wrap">
         <h2>Installation</h2>
+
+        <div class="one-liner">
+          <p>One-line install (detects your OS and architecture automatically):</p>
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/justwaters/LiteHarness/master/install.sh | bash</code></pre>
+          <p class="small">Installs <code>liteharness</code> into <code>~/.local/bin</code>. Make sure that directory is on your <code>PATH</code>.</p>
+        </div>
+
         <ul class="install-list">
           <li>
             <span class="step-num">1</span>
