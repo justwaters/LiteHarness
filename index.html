@@ -353,44 +353,36 @@
     font-size: 0.85rem;
     color: var(--code);
     overflow-x: auto;
-    margin: 0.75rem 0 0 0;
-  }
-
-  .one-liner pre code {
-    background: transparent;
-    border: none;
-    padding: 0;
-    color: var(--code);
-  }
-
-  .one-liner pre {
-    display: inline-block;
+    margin: 0;
+    display: block;
     min-width: 100%;
   }
 
   .copy-block {
-    position: relative;
     margin: 0.75rem 0 0 0;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
   }
 
   .copy-block pre {
     margin: 0;
     flex: 1;
+    min-width: 0;
   }
 
   .btn-copy {
-    margin-top: 0.5rem;
-    padding: 0.4rem 0.9rem;
+    padding: 0.5rem 1rem;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     background: var(--paper);
     border: 1px solid var(--border);
     color: var(--text);
     border-radius: 2px;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .btn-copy:hover { border-color: var(--accent); }
