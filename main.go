@@ -72,7 +72,13 @@ func main() {
 
 		// Slash commands
 		if strings.HasPrefix(line, "/") {
-			handleCommand(line, cfg, provider, &messages)
+			newProvider, err := handleCommand(line, cfg, provider, &messages)
+			if err != nil {
+				PrintError("%s", err)
+			}
+			if newProvider != nil {
+				provider = newProvider
+			}
 			continue
 		}
 
@@ -137,10 +143,10 @@ func main() {
 				}
 				PrintToolResult("%s", result)
 
-				// For OpenAI-compatible: tool result message
+				// Tool results as user messages work for both OpenAI-compatible and Gemini
 				messages = append(messages, Message{
-					Role:    "tool",
-					Content: result,
+					Role:    "user",
+					Content: fmt.Sprintf("[tool result for %s] %s", tc.Name, result),
 				})
 			}
 			// Loop continues: model will process tool results and either
@@ -149,11 +155,11 @@ func main() {
 	}
 }
 
-func handleCommand(line string, cfg *Config, provider Provider, messages *[]Message) {
+func handleCommand(line string, cfg *Config, provider Provider, messages *[]Message) (Provider, error) {
 	cmd := strings.TrimSpace(strings.TrimPrefix(line, "/"))
 	parts := strings.Fields(cmd)
 	if len(parts) == 0 {
-		return
+		return nil, nil
 	}
 
 	switch parts[0] {
@@ -177,12 +183,9 @@ func handleCommand(line string, cfg *Config, provider Provider, messages *[]Mess
 			cfg.Provider = parts[1]
 			p, err := NewProvider(cfg)
 			if err != nil {
-				PrintError("%s", err)
-				cfg.Provider = provider.Name() // revert
-				return
+				return nil, err
 			}
-			_ = p
-			fmt.Printf("Provider set to: %s\n", c(ColorCyan, cfg.Provider))
+			return p, nil
 		} else {
 			fmt.Printf("Current provider: %s\n", c(ColorCyan, cfg.Provider))
 		}
@@ -207,8 +210,9 @@ func handleCommand(line string, cfg *Config, provider Provider, messages *[]Mess
 			fmt.Printf("Config saved to %s/%s\n", home, defaultConfigFile)
 		}
 	default:
-		PrintError("unknown command: /%s. Type /help for commands.", parts[0])
+		return nil, fmt.Errorf("unknown command: /%s. Type /help for commands.", parts[0])
 	}
+	return nil, nil
 }
 
 func printHelp() {

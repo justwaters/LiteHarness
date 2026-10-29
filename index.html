@@ -363,6 +363,38 @@
     color: var(--code);
   }
 
+  .one-liner pre {
+    display: inline-block;
+    min-width: 100%;
+  }
+
+  .copy-block {
+    position: relative;
+    margin: 0.75rem 0 0 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .copy-block pre {
+    margin: 0;
+    flex: 1;
+  }
+
+  .btn-copy {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .btn-copy:hover { border-color: var(--accent); }
+
   .small { font-size: 0.85rem; color: var(--muted); }
 
   /* Install steps — numbered because it IS a sequence */
@@ -636,7 +668,10 @@
 
         <div class="one-liner">
           <p>One-line install (detects your OS and architecture automatically):</p>
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/justwaters/LiteHarness/master/install.sh | bash</code></pre>
+          <div class="copy-block">
+            <pre><code id="install-cmd">curl -fsSL https://raw.githubusercontent.com/justwaters/LiteHarness/master/install.sh | bash</code></pre>
+            <button class="btn-copy" onclick="copyInstallCmd()" title="Copy to clipboard">Copy</button>
+          </div>
           <p class="small">Installs <code>liteharness</code> into <code>~/.local/bin</code>. Make sure that directory is on your <code>PATH</code>.</p>
         </div>
 
@@ -689,5 +724,16 @@
     </div>
   </footer>
 
+  <script>
+    function copyInstallCmd() {
+      const code = document.getElementById('install-cmd');
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        const btn = document.querySelector('.btn-copy');
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = old; }, 1500);
+      });
+    }
+  </script>
 </body>
 </html>

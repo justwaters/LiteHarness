@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -10,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 // ToolFunc is the handler for a tool.
@@ -211,7 +213,7 @@ func NewRegistry() *Registry {
 	})
 	r.register(ToolDef{
 		Name:        "glob",
-		Description: "Find files matching a glob pattern.",
+		Description: "Find files matching a glob pattern. Supports ** for recursive matching.",
 		Parameters: map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
@@ -233,14 +235,39 @@ func NewRegistry() *Registry {
 				path = "."
 			}
 
-			searchPath := filepath.Join(path, pattern)
-			matches, err := filepath.Glob(searchPath)
-			if err != nil {
-				return "", err
+			// Support ** for recursive matching
+			var matches []string
+			if strings.Contains(pattern, "**") {
+				filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
+					if err != nil || d.IsDir() {
+						return nil
+					}
+					rel, err := filepath.Rel(path, p)
+					if err != nil {
+						return nil
+					}
+					ok, err := filepath.Match(pattern, rel)
+					if err != nil {
+						return nil
+					}
+					if ok {
+						matches = append(matches, p)
+					}
+					return nil
+				})
+			} else {
+				searchPath := filepath.Join(path, pattern)
+				var err error
+				matches, err = filepath.Glob(searchPath)
+				if err != nil {
+					return "", err
+				}
 			}
+
 			if len(matches) == 0 {
 				return "No matches found.", nil
 			}
+			sort.Strings(matches)
 			return strings.Join(matches, "\n"), nil
 		},
 	})
@@ -263,8 +290,15 @@ func NewRegistry() *Registry {
 		},
 		Handler: func(args map[string]interface{}) (string, error) {
 			command, _ := args["command"].(string)
+			timeout := 30
+			if t, ok := args["timeout"].(float64); ok {
+				timeout = int(t)
+			}
 
-			cmd := exec.Command("sh", "-c", command)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+			defer cancel()
+
+			cmd := exec.CommandContext(ctx, "sh", "-c", command)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				return string(out) + "\nError: " + err.Error(), nil

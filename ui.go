@@ -96,7 +96,7 @@ func (s *Spinner) spin() {
 	}
 }
 
-// Stop stops the spinner.
+// Stop stops the spinner. Safe to call multiple times.
 func (s *Spinner) Stop() {
 	if s.running {
 		s.running = false
@@ -110,9 +110,4 @@ func stringsRepeat(s string, n int) string {
 		result += s
 	}
 	return result
-}
-
-// ClearLine clears the current terminal line.
-func ClearLine() {
-	fmt.Print("\r\033[K")
 }
