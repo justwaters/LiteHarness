@@ -534,9 +534,9 @@
       <a href="#" class="brand">Lite<em>Harness</em></a>
       <nav>
         <ul>
+          <li><a href="#install">Install</a></li>
           <li><a href="#tools">Tools</a></li>
           <li><a href="#providers">Providers</a></li>
-          <li><a href="#install">Install</a></li>
           <li><a href="https://github.com/justwaters/LiteHarness">GitHub</a></li>
         </ul>
       </nav>
@@ -569,6 +569,50 @@
             <div class="term-line"><span class="term-prompt">&gt;</span><span class="cursor-blip"></span></div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <section id="install">
+      <div class="wrap">
+        <h2>Installation</h2>
+
+        <div class="one-liner">
+          <p>One-line install (detects your OS and architecture automatically):</p>
+          <div class="copy-block">
+            <pre><code id="install-cmd">curl -fsSL https://raw.githubusercontent.com/justwaters/LiteHarness/master/install.sh | bash</code></pre>
+            <button class="btn-copy" onclick="copyInstallCmd()" title="Copy to clipboard">Copy</button>
+          </div>
+          <p class="small">Installs <code>liteharness</code> into <code>~/.local/bin</code>. Make sure that directory is on your <code>PATH</code>.</p>
+        </div>
+
+        <ul class="install-list">
+          <li>
+            <span class="step-num">1</span>
+            <h3>Download a binary</h3>
+            <p>Get the latest release for your platform from GitHub:</p>
+            <ul style="list-style: disc inside; color: var(--muted); margin-left: 1rem; margin-top: 0.5rem;">
+              <li>Linux 64-bit: <code>liteharness-linux-amd64</code></li>
+              <li>Linux 32-bit: <code>liteharness-linux-386</code></li>
+              <li>macOS Intel: <code>liteharness-darwin-amd64</code></li>
+              <li>macOS Apple Silicon: <code>liteharness-darwin-arm64</code></li>
+            </ul>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <h3>Make it executable</h3>
+            <pre><code>chmod +x liteharness-linux-amd64</code></pre>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <h3>Run it</h3>
+            <pre><code>export LITEHARNESS_API_KEY=your-key
+./liteharness-linux-amd64</code></pre>
+            <p>Or build from source:</p>
+            <pre><code>GOOS=linux GOARCH=amd64 go build -o liteharness .</code></pre>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -651,50 +695,6 @@
         </div>
       </div>
     </section>
-
-    <hr class="rule">
-
-    <section id="install">
-      <div class="wrap">
-        <h2>Installation</h2>
-
-        <div class="one-liner">
-          <p>One-line install (detects your OS and architecture automatically):</p>
-          <div class="copy-block">
-            <pre><code id="install-cmd">curl -fsSL https://raw.githubusercontent.com/justwaters/LiteHarness/master/install.sh | bash</code></pre>
-            <button class="btn-copy" onclick="copyInstallCmd()" title="Copy to clipboard">Copy</button>
-          </div>
-          <p class="small">Installs <code>liteharness</code> into <code>~/.local/bin</code>. Make sure that directory is on your <code>PATH</code>.</p>
-        </div>
-
-        <ul class="install-list">
-          <li>
-            <span class="step-num">1</span>
-            <h3>Download a binary</h3>
-            <p>Get the latest release for your platform from GitHub:</p>
-            <ul style="list-style: disc inside; color: var(--muted); margin-left: 1rem; margin-top: 0.5rem;">
-              <li>Linux 64-bit: <code>liteharness-linux-amd64</code></li>
-              <li>Linux 32-bit: <code>liteharness-linux-386</code></li>
-              <li>macOS Intel: <code>liteharness-darwin-amd64</code></li>
-              <li>macOS Apple Silicon: <code>liteharness-darwin-arm64</code></li>
-            </ul>
-          </li>
-          <li>
-            <span class="step-num">2</span>
-            <h3>Make it executable</h3>
-            <pre><code>chmod +x liteharness-linux-amd64</code></pre>
-          </li>
-          <li>
-            <span class="step-num">3</span>
-            <h3>Run it</h3>
-            <pre><code>export LITEHARNESS_API_KEY=your-key
-./liteharness-linux-amd64</code></pre>
-            <p>Or build from source:</p>
-            <pre><code>GOOS=linux GOARCH=amd64 go build -o liteharness .</code></pre>
-          </li>
-        </ul>
-      </div>
-    </section>
   </main>
 
   <hr class="rule">
@@ -708,8 +708,8 @@
         </div>
         <ul class="footer-links">
           <li><a href="https://github.com/justwaters/LiteHarness">GitHub</a></li>
-          <li><a href="#tools">Tools</a></li>
           <li><a href="#install">Install</a></li>
+          <li><a href="#tools">Tools</a></li>
         </ul>
       </div>
       <p class="footer-copy">&copy; 2026 LiteHarness. MIT License.</p>
