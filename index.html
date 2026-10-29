@@ -3,60 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiteHarness — A tiny AI coding harness</title>
-<meta name="description" content="LiteHarness is a tiny AI coding harness styled after Claude Code. Cross-platform, minimal memory, no runtime dependencies.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<title>LiteHarness</title>
+<meta name="description" content="LiteHarness is a tiny AI coding harness styled after Claude Code. Runs on 32-bit and 64-bit machines with minimal memory.">
 <style>
-  /* Token system */
+  /* Token system — Claude Code aesthetic */
   :root {
-    --ink: #0a0a0a;
-    --paper: #161616;
-    --text: #e8e8e8;
-    --muted: #888888;
-    --accent: #e0a34d;
-    --code: #7dd3fc;
-    --border: #262626;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --text: #e6e6e6;
+    --muted: #666666;
+    --accent: #00ff88;
+    --accent-dim: #00cc6a;
+    --border: #1a1a1a;
+    --code-bg: #0d0d0d;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: auto; }
 
   body {
-    background: var(--ink);
+    background: var(--bg);
     color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
     font-size: 16px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'IBM Plex Serif', serif;
-    font-weight: 600;
+    font-family: inherit;
+    font-weight: 700;
     line-height: 1.2;
   }
 
-  p {
-    margin: 0 0 1rem 0;
-    max-width: 72ch;
-  }
+  p { margin: 0 0 1rem 0; }
 
   a {
     color: var(--accent);
     text-decoration: none;
     border-bottom: 1px solid transparent;
-    transition: border-color 0.15s ease;
   }
 
   a:hover { border-bottom-color: var(--accent); }
 
   /* Layout */
-  .wrap { max-width: 780px; margin: 0 auto; padding: 0 1.5rem; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
 
-  /* Skip link for keyboard users */
+  /* Skip link */
   .skip {
     position: absolute;
     left: -9999px;
@@ -72,21 +66,27 @@
     overflow: visible;
     padding: 0.5rem 1rem;
     background: var(--accent);
-    color: var(--ink);
+    color: var(--bg);
     font-weight: 700;
   }
 
-  /* Header / Nav */
+  /* Header — minimal, no blur, no rounded corners */
   header.site-header {
     border-bottom: 1px solid var(--border);
     padding: 1.5rem 0;
     margin-bottom: 3rem;
   }
 
+  header.site-header .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .brand {
-    font-family: 'IBM Plex Serif', serif;
+    font-family: inherit;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     text-decoration: none;
     color: var(--text);
     letter-spacing: -0.02em;
@@ -97,8 +97,7 @@
   nav ul {
     list-style: none;
     display: flex;
-    gap: 1.5rem;
-    margin-top: 0.75rem;
+    gap: 2rem;
   }
 
   nav a {
@@ -107,21 +106,21 @@
     border-bottom: none;
   }
 
-  nav a:hover { color: var(--text); border-bottom: none; }
+  nav a:hover { color: var(--text); }
 
-  /* Hero — the memorable element */
+  /* Hero — large terminal, left-aligned, no centering */
   .hero { margin-bottom: 4rem; }
 
   .hero-title {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 0.75rem;
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    margin-bottom: 0.5rem;
     letter-spacing: -0.03em;
   }
 
   .hero-title em { color: var(--accent); font-style: normal; }
 
   .hero-sub {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--muted);
     margin-bottom: 2rem;
     max-width: 60ch;
@@ -129,51 +128,45 @@
 
   .hero-actions {
     display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .btn {
     display: inline-block;
-    padding: 0.55rem 1.25rem;
+    padding: 0.5rem 1.25rem;
     border: 1px solid var(--border);
     border-radius: 0;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 700;
     text-decoration: none;
+    color: var(--text);
+    background: transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
   }
 
   .btn-primary {
     background: var(--accent);
-    color: var(--ink);
+    color: var(--bg);
     border-color: var(--accent);
   }
 
-  .btn-primary:hover { background: #d4943f; border-color: #d4943f; }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--border);
-  }
+  .btn-primary:hover { background: var(--accent-dim); }
 
   .btn-ghost:hover { border-color: var(--text); color: var(--text); }
 
   .terminal {
-    margin-top: 3rem;
+    margin-top: 2rem;
     border: 1px solid var(--border);
     background: #000;
     overflow: hidden;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 0.85rem;
     line-height: 1.5;
   }
 
   .terminal-head {
-    background: #121212;
+    background: #0a0a0a;
     padding: 0.5rem 1rem;
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -193,10 +186,10 @@
     margin-left: auto;
     font-size: 0.75rem;
     color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
   }
 
-  .terminal-body { padding: 1rem; }
+  .terminal-body { padding: 1rem 1.25rem; }
 
   .term-line { margin-bottom: 0.75rem; }
 
@@ -208,7 +201,7 @@
 
   .term-tool-name { color: var(--accent); font-weight: 700; }
 
-  .term-result { color: #a1e6a1; }
+  .term-result { color: #80cbc4; }
 
   .cursor-blip {
     display: inline-block;
@@ -226,113 +219,24 @@
   section { margin-bottom: 4rem; }
 
   section h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text);
     letter-spacing: -0.02em;
   }
-
-  section h2 em { color: var(--accent); font-style: normal; }
 
   .rule {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 2rem 0;
+    margin: 3rem 0;
   }
 
-  /* Feature list — no cards, just spaced items */
-  .feature-list { list-style: none; }
-
-  .feature-list li {
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .feature-list li:last-child { border-bottom: none; }
-
-  .feature-name {
-    font-weight: 700;
-    color: var(--accent);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
-  }
-
-  .feature-desc {
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-top: 0.25rem;
-    display: block;
-  }
-
-  /* Tools — simple table-like list, not cards */
-  .tools-list { list-style: none; }
-
-  .tools-list li {
-    display: flex;
-    gap: 1.5rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tools-list li:last-child { border-bottom: none; }
-
-  .tool-name-col {
-    width: 150px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    color: var(--accent);
-    font-size: 0.9rem;
-  }
-
-  .tool-desc-col { color: var(--text); font-size: 0.9rem; }
-
-  /* Providers */
-  .provider-list { list-style: none; }
-
-  .provider-list li {
-    margin-bottom: 1.5rem;
-  }
-
-  .provider-list h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 0.4rem;
-  }
-
-  .provider-list ul {
-    list-style: none;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-
-  .provider-list li li { margin-bottom: 0.25rem; border: none; padding: 0; }
-
-  /* Config block */
-  .config {
-    background: var(--paper);
-    border: 1px solid var(--border);
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-    overflow-x: auto;
-  }
-
-  .config pre {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--text);
-    line-height: 1.5;
-  }
-
-  .config code { color: var(--text); }
-
-  .config span.comment { color: var(--muted); }
-
+  /* Install — front and center */
   .one-liner {
-    background: var(--paper);
+    background: var(--surface);
     border: 1px solid var(--border);
     padding: 1.5rem;
-    margin: 2rem 0;
+    margin-bottom: 2rem;
     border-left: 3px solid var(--accent);
     overflow-x: auto;
   }
@@ -341,19 +245,18 @@
     margin: 0 0 0.75rem 0;
     color: var(--muted);
     font-size: 0.9rem;
-    max-width: none;
   }
 
   .one-liner pre {
-    background: #0d0d0d;
+    background: var(--code-bg);
     border: 1px solid var(--border);
-    border-radius: 2px;
+    border-radius: 0;
     padding: 1rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 0.85rem;
-    color: var(--code);
+    color: var(--accent);
     overflow-x: auto;
-    margin: 0;
+    margin: 0.75rem 0 0 0;
     display: block;
     min-width: 100%;
   }
@@ -374,18 +277,18 @@
 
   .btn-copy {
     padding: 0.5rem 1rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 0.85rem;
-    background: var(--paper);
+    background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
-    border-radius: 2px;
+    border-radius: 0;
     cursor: pointer;
     white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .btn-copy:hover { border-color: var(--accent); }
+  .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
 
   .small { font-size: 0.85rem; color: var(--muted); }
 
@@ -425,21 +328,21 @@
   }
 
   .install-list code {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--code);
+    font-family: inherit;
+    color: var(--accent);
     background: #0d0d0d;
     padding: 0.15rem 0.4rem;
     border: 1px solid var(--border);
-    border-radius: 2px;
+    border-radius: 0;
     font-size: 0.9rem;
   }
 
   .install-list pre {
     background: #0d0d0d;
     border: 1px solid var(--border);
-    border-radius: 2px;
+    border-radius: 0;
     padding: 1rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
     font-size: 0.85rem;
     color: var(--text);
     overflow-x: auto;
@@ -450,8 +353,73 @@
     background: transparent;
     border: none;
     padding: 0;
-    color: #a5c9d9;
+    color: #80cbc4;
   }
+
+  /* Tools — simple list, no cards */
+  .tools-list { list-style: none; }
+
+  .tools-list li {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tools-list li:last-child { border-bottom: none; }
+
+  .tool-name-col {
+    width: 150px;
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.9rem;
+  }
+
+  .tool-desc-col { color: var(--text); font-size: 0.9rem; }
+
+  /* Providers */
+  .provider-list { list-style: none; }
+
+  .provider-list li {
+    margin-bottom: 1.5rem;
+  }
+
+  .provider-list h3 {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .provider-list ul {
+    list-style: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .provider-list li li { margin-bottom: 0.25rem; border: none; padding: 0; }
+
+  /* Config block */
+  .config {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .config pre {
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .config code { color: var(--text); }
+
+  .config span.comment { color: var(--muted); }
 
   /* Footer */
   footer {
@@ -469,7 +437,7 @@
   }
 
   .footer-brand {
-    font-family: 'IBM Plex Serif', serif;
+    font-family: inherit;
     font-weight: 700;
     font-size: 1.25rem;
     text-decoration: none;
@@ -485,7 +453,7 @@
     max-width: 30ch;
   }
 
-  .footer-links { list-style: none; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .footer-links { list-style: none; display: flex; gap: 2rem; flex-wrap: wrap; }
 
   .footer-links a {
     color: var(--muted);
@@ -506,11 +474,12 @@
   /* Responsive */
   @media (max-width: 640px) {
     .wrap { padding: 0 1rem; }
-    .hero-title { font-size: 2rem; }
+    .hero-title { font-size: 1.75rem; }
     .tools-list li { flex-direction: column; gap: 0.4rem; }
     .tool-name-col { width: auto; }
     .footer-grid { flex-direction: column; gap: 1.5rem; }
     nav ul { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+    .hero-actions { flex-direction: column; gap: 0.75rem; }
     .skip:focus { position: static; }
   }
 
@@ -547,10 +516,10 @@
     <section class="hero">
       <div class="wrap">
         <h1 class="hero-title">Lite<em>Harness</em></h1>
-        <p class="hero-sub">A tiny AI coding harness styled after Claude Code. Cross-platform, minimal memory, no runtime dependencies.</p>
+        <p class="hero-sub">A tiny AI coding harness styled after Claude Code. Runs on 32-bit and 64-bit machines with minimal memory.</p>
         <div class="hero-actions">
-          <a href="#install" class="btn btn-primary">Get started</a>
-          <a href="https://github.com/justwaters/LiteHarness" class="btn btn-ghost">View on GitHub</a>
+          <a href="#install" class="btn btn-primary">Install</a>
+          <a href="https://github.com/justwaters/LiteHarness" class="btn btn-ghost">GitHub</a>
         </div>
 
         <div class="terminal">
@@ -723,7 +692,7 @@
         const btn = document.querySelector('.btn-copy');
         const old = btn.textContent;
         btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = old; }, 1500);
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
       });
     }
   </script>
