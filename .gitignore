@@ -1,0 +1,20 @@
+# Compiled binaries
+liteharness
+liteharness-*
+*.exe
+
+# Go
+vendor/
+*.exe
+/test/
+/coverage/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
