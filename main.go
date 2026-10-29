@@ -6,7 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/signal"
+	"path/filepath"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -36,6 +39,9 @@ func main() {
 				cfg.APIKey = args[i+1]
 				i++
 			}
+		case "--version", "-v":
+			fmt.Println("liteharness 0.1.0")
+			return
 		case "--help", "-h":
 			printHelp()
 			return
@@ -50,17 +56,25 @@ func main() {
 
 	registry := NewRegistry()
 
-	fmt.Println(c(ColorBold, "LiteHarness"))
-	fmt.Printf("Provider: %s  Model: %s\n", c(ColorCyan, provider.Name()), c(ColorCyan, cfg.Model))
+	// Load conversation history if it exists
+	messages := loadHistory()
+
+	fmt.Print(c(ColorBold, "LiteHarness"))
+	fmt.Printf("  Provider: %s  Model: %s\n", c(ColorCyan, provider.Name()), c(ColorCyan, cfg.Model))
 	fmt.Println(c(ColorDim, "Type your message, or /help for commands. Ctrl-D to exit.\n"))
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 1024*1024), 1024*1024) // allow up to 1MB lines
 
-	messages := []Message{}
+	// SIGINT handler for interrupting
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt)
+
+	var mu sync.Mutex
+	interrupted := false
 
 	for {
-		fmt.Print(c(ColorBold+ColorGreen, "> "))
+		fmt.Print(c(ColorDim, "> "))
 		if !scanner.Scan() {
 			fmt.Println() // ^D
 			break
@@ -79,6 +93,7 @@ func main() {
 			if newProvider != nil {
 				provider = newProvider
 			}
+			saveHistory(messages)
 			continue
 		}
 
@@ -87,7 +102,12 @@ func main() {
 		PrintUser(line)
 
 		// Agent loop: keep going until model gives a final answer (no tool calls)
+		interrupted = false
 		for {
+			if interrupted {
+				break
+			}
+
 			spin := StartSpinner()
 
 			req := ChatRequest{
@@ -108,29 +128,48 @@ func main() {
 			var assistantContent strings.Builder
 			var toolCalls []ToolCall
 
-			for chunk := range chunkCh {
-				switch chunk.Type {
-				case ChunkText:
-					spin.Stop()
-					PrintModel(os.Stdout, chunk.Content)
-					assistantContent.WriteString(chunk.Content)
-				case ChunkToolCall:
-					spin.Stop()
-					toolCalls = append(toolCalls, chunk.ToolCalls...)
-				case ChunkDone:
-					spin.Stop()
-				case ChunkError:
-					spin.Stop()
-					PrintError("%s", chunk.Err)
+			// Read chunks in a goroutine so we can respond to SIGINT
+			done := make(chan struct{})
+			go func() {
+				defer close(done)
+				for chunk := range chunkCh {
+					mu.Lock()
+					switch chunk.Type {
+					case ChunkText:
+						spin.Stop()
+						PrintModel(os.Stdout, chunk.Content)
+						assistantContent.WriteString(chunk.Content)
+					case ChunkToolCall:
+						spin.Stop()
+						toolCalls = append(toolCalls, chunk.ToolCalls...)
+					case ChunkDone:
+						spin.Stop()
+					case ChunkError:
+						spin.Stop()
+						PrintError("%s", chunk.Err)
+					}
+					mu.Unlock()
 				}
+			}()
+
+			// Wait for either completion or interrupt
+			select {
+			case <-done:
+				// Completed normally
+			case <-sigCh:
+				interrupted = true
+				spin.Stop()
+				fmt.Println(c(ColorDim, "\nInterrupted."))
+				// Drain remaining chunks
+				<-done
 			}
+
 			fmt.Println() // newline after streaming
 
 			assistantMsg := Message{Role: "assistant", Content: assistantContent.String()}
 			messages = append(messages, assistantMsg)
 
-			if len(toolCalls) == 0 {
-				// Final answer received
+			if interrupted || len(toolCalls) == 0 {
 				break
 			}
 
@@ -152,6 +191,8 @@ func main() {
 			// Loop continues: model will process tool results and either
 			// make more tool calls or give a final answer.
 		}
+
+		saveHistory(messages)
 	}
 }
 
@@ -210,6 +251,14 @@ func handleCommand(line string, cfg *Config, provider Provider, messages *[]Mess
 			home, _ := os.UserHomeDir()
 			fmt.Printf("Config saved to %s/%s\n", home, defaultConfigFile)
 		}
+	case "history":
+		if len(parts) > 1 && parts[1] == "clear" {
+			*messages = nil
+			saveHistory(*messages)
+			fmt.Println("Conversation history cleared.")
+		} else {
+			fmt.Printf("Conversation has %d messages.\n", len(*messages))
+		}
 	default:
 		return nil, fmt.Errorf("unknown command: /%s. Type /help for commands.", parts[0])
 	}
@@ -222,21 +271,76 @@ func printHelp() {
 	fmt.Println("Commands:")
 	fmt.Println("  /help              Show this help")
 	fmt.Println("  /exit              Exit LiteHarness")
-	fmt.Println("  /clear             Clear conversation history")
+	fmt.Println("  /clear             Clear conversation history and screen")
 	fmt.Println("  /model [name]      Get or set the model")
 	fmt.Println("  /provider [name]   Get or set the provider (openai, gemini)")
 	fmt.Println("  /system [text]     Get or set the system prompt")
 	fmt.Println("  /tools             List available tools")
 	fmt.Println("  /save              Save config to ~/.liteharnessrc")
+	fmt.Println("  /history clear     Clear saved conversation history")
 	fmt.Println()
 	fmt.Println("Environment variables:")
-	fmt.Println("  LITEHARNESS_PROVIDER   openai | gemini")
-	fmt.Println("  LITEHARNESS_BASE_URL   API base URL (for OpenAI-compatible)")
-	fmt.Println("  LITEHARNESS_MODEL      Model name")
-	fmt.Println("  LITEHARNESS_API_KEY    API key")
-	fmt.Println("  LITEHARNESS_SYSTEM_PROMPT  System prompt")
+	fmt.Println("  LITEHARNESS_PROVIDER        openai | gemini")
+	fmt.Println("  LITEHARNESS_BASE_URL        API base URL (for OpenAI-compatible)")
+	fmt.Println("  LITEHARNESS_MODEL           Model name")
+	fmt.Println("  LITEHARNESS_API_KEY         API key")
+	fmt.Println("  LITEHARNESS_SYSTEM_PROMPT   System prompt")
 	fmt.Println()
 	fmt.Println("Config file: ~/.liteharnessrc (key=value format)")
 	fmt.Println()
 	fmt.Println("Tools: read_file, write_file, edit_file, ls, grep, glob, run_command, todo_write")
+}
+
+// historyDir returns the directory for storing conversation history.
+func historyDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, ".liteharness")
+}
+
+// historyFile returns the path to the conversation history file.
+func historyFile() string {
+	dir := historyDir()
+	if dir == "" {
+		return ""
+	}
+	return filepath.Join(dir, "history.json")
+}
+
+// loadHistory loads the conversation history from disk.
+func loadHistory() []Message {
+	path := historyFile()
+	if path == "" {
+		return nil
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	var messages []Message
+	if err := json.Unmarshal(data, &messages); err != nil {
+		return nil
+	}
+	return messages
+}
+
+// saveHistory saves the conversation history to disk.
+func saveHistory(messages []Message) {
+	path := historyFile()
+	if path == "" {
+		return
+	}
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return
+	}
+	data, err := json.MarshalIndent(messages, "", "  ")
+	if err != nil {
+		return
+	}
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		return
+	}
 }
