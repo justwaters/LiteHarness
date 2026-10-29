@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiteHarness — Tiny AI Coding Harness</title>
+<meta name="description" content="LiteHarness is a tiny, cross-platform AI coding harness styled after Claude Code. Runs on 32-bit and 64-bit machines with minimal memory.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">Lite<span>Harness</span></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#tools">Tools</a>
+      <a href="#providers">Providers</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/justwaters/LiteHarness" class="btn btn-outline">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-content">
+    <span class="badge">Open Source</span>
+    <h1>LiteHarness<span class="cursor">_</span></h1>
+    <p class="hero-sub">A tiny AI coding harness styled after Claude Code. Cross-platform, minimal memory, no runtime dependencies.</p>
+    <div class="hero-actions">
+      <a href="#install" class="btn btn-primary">Get Started</a>
+      <a href="https://github.com/justwaters/LiteHarness" class="btn btn-secondary">View on GitHub</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value">~10 MB</span>
+        <span class="stat-label">binary size</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">32 & 64-bit</span>
+        <span class="stat-label">architectures</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">0 MB</span>
+        <span class="stat-label">runtime dependencies</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-terminal">
+    <div class="terminal">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="terminal-title">liteharness</div>
+      </div>
+      <div class="terminal-body">
+        <div class="term-line"><span class="prompt">&gt;</span> <span class="input">Read the main.go file and summarize its purpose.</span></div>
+        <div class="term-line"><span class="tool-tag">[tool]</span> <span class="tool-name">read_file</span>({"path": "main.go"})</div>
+        <div class="term-line"><span class="tool-tag">[result]</span> main.go contains the REPL loop, slash command handler, and agent tool-calling loop for LiteHarness.</div>
+        <div class="term-line blink"><span class="prompt">&gt;</span> <span class="cursor-block">_</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features" class="section section-light">
+  <div class="container">
+    <h2 class="section-title">Why LiteHarness?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🪶</div>
+        <h3>Tiny footprint</h3>
+        <p>~10 MB binary. No Node, Python, or Rust toolchain. No garbage-collected runtime bloat.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💻</div>
+        <h3>32-bit + 64-bit</h3>
+        <p>Cross-compiles from one machine to any target — x86, ARM, Linux, macOS. Run it anywhere.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Streaming responses</h3>
+        <p>Tokens print as they arrive from the LLM. No waiting for the full completion before you see output.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Full tool set</h3>
+        <p>Read, write, edit, grep, glob, ls, run commands, and manage todos — just like Claude Code.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Any provider</h3>
+        <p>OpenAI-compatible (Ollama, OpenRouter, NVIDIA NIM, generic) and Gemini API support.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⌨️</div>
+        <h3>Slash commands</h3>
+        <p>/help, /exit, /clear, /model, /provider, /system, /tools, /save — all from the REPL.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tools" class="section">
+  <div class="container">
+    <h2 class="section-title">Built-in Tools</h2>
+    <p class="section-sub">LiteHarness exposes these tools to the model during conversation:</p>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-name">read_file</div>
+        <div class="tool-desc">Read the contents of a file.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">write_file</div>
+        <div class="tool-desc">Write or overwrite a file with content.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">edit_file</div>
+        <div class="tool-desc">Replace a specific string in a file (str_replace).</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">ls</div>
+        <div class="tool-desc">List files and directories in a path.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">grep</div>
+        <div class="tool-desc">Search file contents with regex.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">glob</div>
+        <div class="tool-desc">Find files matching a glob pattern.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">run_command</div>
+        <div class="tool-desc">Run a shell command and return output.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">todo_write</div>
+        <div class="tool-desc">Manage a todo list during work.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="providers" class="section section-light">
+  <div class="container">
+    <h2 class="section-title">Supported Providers</h2>
+    <div class="providers-grid">
+      <div class="provider-card">
+        <h3>OpenAI-compatible</h3>
+        <p>Works with any OpenAI-compatible API:</p>
+        <ul>
+          <li>Ollama (local)</li>
+          <li>OpenRouter</li>
+          <li>NVIDIA NIM</li>
+          <li>OpenAI</li>
+          <li>Generic endpoints</li>
+        </ul>
+      </div>
+      <div class="provider-card">
+        <h3>Gemini</h3>
+        <p>Google's Gemini API:</p>
+        <ul>
+          <li>gemini-1.5-flash</li>
+          <li>gemini-1.5-pro</li>
+          <li>gemini-pro</li>
+        </ul>
+      </div>
+    </div>
+    <div class="config-example">
+      <div class="config-title">Configuration</div>
+      <pre><code># ~/.liteharnessrc
+provider=openai
+base_url=https://api.openai.com/v1
+model=gpt-3.5-turbo
+api_key=sk-...
+system_prompt=You are a helpful coding assistant.</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="install" class="section">
+  <div class="container">
+    <h2 class="section-title">Installation</h2>
+    <div class="install-steps">
+      <div class="install-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Download a binary</h3>
+          <p>Get the latest release for your platform from GitHub:</p>
+          <ul>
+            <li><strong>Linux 64-bit:</strong> <code>liteharness-linux-amd64</code></li>
+            <li><strong>Linux 32-bit:</strong> <code>liteharness-linux-386</code></li>
+            <li><strong>macOS Intel:</strong> <code>liteharness-darwin-amd64</code></li>
+            <li><strong>macOS Apple Silicon:</strong> <code>liteharness-darwin-arm64</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Make it executable</h3>
+          <pre><code>chmod +x liteharness-linux-amd64</code></pre>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Run it</h3>
+          <pre><code>export LITEHARNESS_API_KEY=your-key
+./liteharness-linux-amd64</code></pre>
+          <p>Or build from source:</p>
+          <pre><code>GOOS=linux GOARCH=amd64 go build -o liteharness .</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">Lite<span>Harness</span></a>
+        <p>Tiny AI coding harness styled after Claude Code.</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/justwaters/LiteHarness">GitHub</a>
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2026 LiteHarness. MIT License.</p>
+  </div>
+</footer>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f172a;
+  --bg-light: #f8fafc;
+  --text: #f1f5f9;
+  --text-dim: #94a3b8;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --border: #334155;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+/* Nav */
+.navbar { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.nav-container { max-width: 1000px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.5rem; text-decoration: none; color: var(--text); }
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a { text-decoration: none; color: var(--text-dim); font-size: 0.95rem; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+
+/* Buttons */
+.btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 0.95rem; transition: all 0.2s; border: 1px solid transparent; cursor: pointer; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--border); }
+.btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+.btn-outline:hover { background: var(--border); }
+
+/* Hero */
+.hero { padding: 80px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 48px; }
+.badge { display: inline-block; padding: 6px 12px; border-radius: 20px; background: rgba(59, 130, 246, 0.15); color: var(--accent); font-size: 0.85rem; font-weight: 500; margin-bottom: 16px; }
+.hero h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.02em; }
+.hero h1 .cursor { color: var(--accent); animation: blink 1s infinite; }
+.hero-sub { font-size: 1.25rem; color: var(--text-dim); max-width: 600px; margin: 0 auto 24px; }
+.hero-actions { display: flex; gap: 12px; justify-content: center; }
+.hero-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-value { display: block; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.85rem; color: var(--text-dim); }
+
+/* Terminal */
+.hero-terminal { width: 100%; max-width: 700px; }
+.terminal { background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+.terminal-header { display: flex; align-items: center; padding: 8px 12px; background: #1e1e1e; border-bottom: 1px solid #333; }
+.terminal-dots { display: flex; gap: 6px; }
+.terminal-dots .dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dots .red { background: #ff5f56; }
+.terminal-dots .yellow { background: #ffbd2e; }
+.terminal-dots .green { background: #27c93f; }
+.terminal-title { margin-left: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #888; }
+.terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+.term-line { margin-bottom: 8px; display: flex; gap: 8px; }
+.term-line:last-child { margin-bottom: 0; }
+.prompt { color: var(--success); min-width: 16px; }
+.input { color: var(--text); }
+.tool-tag { color: #888; }
+.tool-name { color: var(--accent); font-weight: 600; }
+.blink .cursor-block { animation: blink 1s infinite; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Sections */
+.section { padding: 80px 24px; }
+.section-light { background: var(--bg-light); color: #0f172a; }
+.section-light .section-title { color: #0f172a; }
+.section-light .section-sub { color: #475569; }
+.section-light .feature-card p, .section-light .stat-label { color: #64748b; }
+.section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 12px; letter-spacing: -0.01em; }
+.section-sub { text-align: center; color: var(--text-dim); margin-bottom: 48px; font-size: 1.1rem; }
+
+/* Features */
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+.feature-card { background: var(--bg); padding: 28px; border-radius: 10px; border: 1px solid var(--border); }
+.feature-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.feature-card p { color: var(--text-dim); font-size: 0.95rem; }
+.feature-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
+
+/* Tools */
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.tool-card { padding: 20px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); }
+.tool-name { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.tool-desc { font-size: 0.9rem; color: var(--text-dim); }
+
+/* Providers */
+.providers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-bottom: 48px; }
+.provider-card { background: var(--bg); padding: 32px; border-radius: 12px; border: 1px solid var(--border); }
+.provider-card h3 { margin-bottom: 12px; font-size: 1.25rem; }
+.provider-card ul { list-style: none; color: var(--text-dim); }
+.provider-card li { margin-bottom: 8px; font-size: 0.95rem; }
+.config-example { background: #000; border-radius: 8px; padding: 24px; border: 1px solid var(--border); }
+.config-title { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; display: block; }
+.config-example pre { background: transparent; padding: 0; overflow-x: auto; }
+.config-example code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text); }
+
+/* Install */
+.install-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.install-step { display: flex; gap: 16px; }
+.step-number { width: 40px; height: 40px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; }
+.step-content h3 { margin-bottom: 8px; font-size: 1.1rem; }
+.step-content p { color: var(--text-dim); margin-bottom: 12px; font-size: 0.95rem; }
+.step-content code { font-family: 'JetBrains Mono', monospace; background: rgba(15, 23, 42, 0.6); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+.step-content pre { background: #000; padding: 16px; border-radius: 6px; margin-top: 12px; overflow-x: auto; }
+.step-content pre code { background: transparent; padding: 0; color: #88c1ff; }
+
+/* Footer */
+.footer { background: #0a0e16; border-top: 1px solid var(--border); padding: 48px 24px; margin-top: 80px; }
+.footer-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; }
+.footer-brand a { text-decoration: none; }
+.footer-brand p { color: var(--text-dim); font-size: 0.9rem; margin-top: 8px; }
+.footer-links { display: flex; flex-direction: column; gap: 12px; }
+.footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.95rem; }
+.footer-links a:hover { color: var(--text); }
+.footer-copy { text-align: center; color: var(--text-dim); font-size: 0.85rem; margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border); }
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 2.5rem; }
+  .nav-links { display: none; }
+  .footer-content { flex-direction: column; gap: 24px; }
+}
+</style>
+</body>
+</html>
